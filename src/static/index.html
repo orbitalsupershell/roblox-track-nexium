@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Nexium</title>
+    <style>
+        * {
+            color-scheme: dark;
+            font-family: monospace;
+        }
+    </style>
+    <style>
+        h1.logo {
+            text-align: center;
+            color: rgb(230, 230, 230);
+            text-shadow: 3px 3px 2px rgb(85, 85, 85);
+            margin: 0;
+        }
+
+        div.main {
+            background-image: none;
+            background-color: rgb(185, 195, 200);
+        }
+
+        #list {
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-content: center;
+            width: 60vw;
+            box-sizing: border-box;
+            max-width: none;
+            padding-left: 2vh;
+            padding-right: 2vh;
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        #player {
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 0.5vw;
+            margin-top: 0.5vh;
+            margin-bottom: 0.5vh;
+            box-shadow: 3px 3px 7px rgb(85, 85, 85);
+        }
+
+        #player h1,
+        h2 {
+            color: white !important;
+            width: 50%;
+            height: 100%;
+            margin: 0;
+            text-align: center;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            text-shadow: 3px 3px 7px rgb(85, 85, 85);
+            margin: 0;
+            margin-left: 0;
+        }
+
+        #player h2 {
+            margin-left: 0;
+        }
+
+        div.ingame {
+            background-color: rgb(75, 190, 75) !important;
+        }
+
+        div.website {
+            background-color: rgb(75, 75, 180) !important;
+        }
+
+        div.Xoffline {
+            background-color: rgb(40, 40, 40) !important;
+        }
+
+        div.undef {
+            background-color: rgb(109, 20, 125) !important;
+        }
+    </style>
+    <style>
+        #player {
+            display: flex;
+            padding: 0.4vw;
+            transition: 0.2s all;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        div.main {
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1,
+        h2 {
+            font-size: 1.2vw;
+        }
+
+        .logo {
+            font-size: 3vw;
+            transition: 5s all;
+        }
+
+        .logo:hover {
+            transform: scalex(20) scaley(1.1);
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        #player:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="title">
+            <h1 class="logo">Nexium</h1>
+        </div>
+        <div id="list">
+
+        </div>
+    </div>
+</body>
+<script>
+    let elist = {};
+    function gen_update(target) {
+
+        obj = JSON.parse(target)
+        for (k in obj) {
+            let box = elist[k]
+            box.className = set_status(obj[k][2])
+        }
+
+        {
+            const parent = document.querySelector("#list");
+            const elements = Array.from(parent.children);
+            elements.sort((a, b) => a.className.localeCompare(b.className));
+            elements.forEach(el => parent.appendChild(el));
+        }
+
+
+    }
+    function set_status(s) {
+        return { 0: "Xoffline", 1: "website", 2: "ingame", 3: "studio", 4: "undef" }[s]
+    }
+    function gen_generate(target) {
+        let list = document.getElementById("list")
+
+
+        obj = JSON.parse(target)
+        for (k in obj) {
+            console.log(k);
+
+            let box = document.createElement("div");
+            box.id = "player";
+            box.className = set_status(obj[k][2])
+            list.appendChild(box)
+
+            let name = document.createElement("h1");
+            name.innerText = obj[k][0]
+            box.appendChild(name);
+
+            let clan = document.createElement("h2");
+            clan.innerText = obj[k][1]
+            box.appendChild(clan);
+            elist[k] = box;
+        }
+    }
+    function gen_fetch_create() {
+        fetch('api/trackingupdate')
+            .then(response => response.text())
+            .then(data => {
+                console.log(data)
+                gen_generate(data)
+            })
+            .catch(error => console.error('Error fetching the resource:', error));
+    }
+    function gen_fetch_update() {
+        fetch('api/trackingupdate')
+            .then(response => response.text())
+            .then(data => {
+                console.log(data)
+                gen_update(data)
+            })
+            .catch(error => console.error('Error fetching the resource:', error));
+    }
+    gen_fetch_create()
+    gen_fetch_update()
+    setInterval(() => {
+        gen_fetch_update()
+    }, 5000);
+
+</script>
+
+</html>

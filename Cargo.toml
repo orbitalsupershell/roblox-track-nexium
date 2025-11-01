@@ -1,0 +1,25 @@
+[package]
+name = "nexium"
+version = "0.1.0"
+edition = "2024"
+default-run = "main"
+
+[dependencies]
+reqwest = {version="0.12.24",features=["blocking","socks"]}
+serde_json = "1.0.145"
+serde = {version = "1.0.228", features = ["derive"] } 
+
+[profile.release]
+lto = "fat"
+strip = "symbols"
+codegen-units = 1
+opt-level = 3
+panic = "abort"
+
+[[bin]]
+name = "main"
+path = "src/main.rs"
+
+[[bin]]
+name = "regenerate_database"
+path = "src/regenerate_database.rs"
