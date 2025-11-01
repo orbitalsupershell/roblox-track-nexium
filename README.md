@@ -6,5 +6,5 @@
 ### starting server
 `cargo run`
 
-## exe file:
+## if you dont:
 ### just kidding dont download random exe files from github
